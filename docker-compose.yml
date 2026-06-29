@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:17
+
+    container_name: reworkiq-postgres
+
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: reworkiq_db
+      POSTGRES_USER: reworkiq_user
+      POSTGRES_PASSWORD: reworkiq_password
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - reworkiq_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  reworkiq_postgres_data:
