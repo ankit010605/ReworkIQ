@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api/api";
 import PieAnalytics from "../components/PieAnalytics";
 
 import {
@@ -257,7 +257,7 @@ export default function Dashboard() {
     setLoading(true);
     setError(false);
     try {
-      const { data } = await axios.get("http://127.0.0.1:5000/api/stats");
+        const { data } = await api.get("/stats");
       setStats(data);
     } catch (e) {
       console.error(e);
