@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "../api/api";
+import { DEFECT_CODES } from "../constants/defectCodes";
 
 const T = {
   bg: "#0F172A",
@@ -37,19 +38,6 @@ const CONTRACTORS = [
   "Shivgauri",
 ];
 
-const DEFECT_CODES = [
-  { code: "HOP", label: "Hole Oversize" },
-  { code: "EDGE", label: "Edge Damage" },
-  { code: "LGT", label: "Length Issue" },
-  { code: "IMO", label: "Incorrect Member Orientation" },
-  { code: "ITM", label: "Incorrect Member" },
-  { code: "JHP", label: "Joint Hole Position" },
-  { code: "CSD", label: "Cut Surface Damage" },
-  { code: "MTG", label: "Missing Tack Gap" },
-  { code: "ORW", label: "Over Weld" },
-  { code: "SHD", label: "Shape Distortion" },
-  { code: "OTH", label: "Others" },
-];
 
 const EMPTY = {
   plant: "Plant 1",

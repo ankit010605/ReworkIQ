@@ -1,5 +1,12 @@
 import { NavLink } from "react-router-dom";
-import { FaChartBar, FaClipboardList, FaPlusCircle } from "react-icons/fa";
+import { FaIndustry } from "react-icons/fa";
+import {
+  FaChartBar,
+  FaClipboardList,
+  FaPlusCircle,
+  FaUserTie,
+} from "react-icons/fa";
+import { FaFileExcel } from "react-icons/fa";
 
 const T = {
   textPrimary:   "#F1F5F9",
@@ -12,11 +19,40 @@ const T = {
 };
 
 const NAV_ITEMS = [
-  { to: "/",     icon: <FaChartBar size={15} />,     label: "Dashboard"   },
-  { to: "/add",  icon: <FaPlusCircle size={15} />,   label: "Add Rework"  },
-  { to: "/list", icon: <FaClipboardList size={15} />, label: "Rework List" },
-];
+  {
+    to: "/",
+    icon: <FaChartBar size={15} />,
+    label: "Dashboard",
+  },
 
+  {
+    to: "/add",
+    icon: <FaPlusCircle size={15} />,
+    label: "Add Rework",
+  },
+
+  {
+    to: "/list",
+    icon: <FaClipboardList size={15} />,
+    label: "Rework List",
+  },
+  {
+    to: "/plant-analytics",
+    icon: <FaIndustry size={15} />,
+    label: "Plant Analytics",
+  },
+
+  {
+    to: "/contractor-analytics",
+    icon: <FaUserTie size={15} />,
+    label: "Contractor Analytics",
+  },
+  {
+    to: "/import",
+    icon: <FaFileExcel size={15} />,
+    label: "Import Excel",
+},
+];
 function Sidebar() {
   return (
     <div style={{

@@ -1,7 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 import api from "../api/api";
 import ReworkTable from "../components/ReworkTable";
+const T = {
+  bg: "#0F172A",
+  surface: "#1E293B",
+  surfaceDeep: "#162032",
+  border: "#2D3F55",
+  textPrimary: "#F1F5F9",
+  textSecondary: "#94A3B8",
+  textMuted: "#64748B",
+  blue: "#3B82F6",
+};
 
 function ReworkList() {
 
@@ -16,6 +28,8 @@ function ReworkList() {
   const [contractor, setContractor] = useState("All");
 
   const [defectCode, setDefectCode] = useState("All");
+
+  const [dateFilter, setDateFilter] = useState("All");
 
   const fetchReworks = async () => {
 
@@ -136,6 +150,35 @@ function ReworkList() {
       ||
 
       item.defect_code === defectCode;
+      const today = new Date();
+
+const itemDate = new Date(item.inspection_date);
+
+const todayMatch =
+  itemDate.toDateString() === today.toDateString();
+
+  const diffDays = (today - itemDate) / (1000 * 60 * 60 * 24);
+
+  const last7DaysMatch =
+    diffDays >= 0 && diffDays <= 7;
+
+const thisMonthMatch =
+  itemDate.getMonth() === today.getMonth() &&
+  itemDate.getFullYear() === today.getFullYear();
+
+const thisYearMatch =
+  itemDate.getFullYear() === today.getFullYear();
+
+const dateMatch =
+  dateFilter === "All" ||
+
+  (dateFilter === "Today" && todayMatch) ||
+
+  (dateFilter === "Last 7 Days" && last7DaysMatch) ||
+
+  (dateFilter === "This Month" && thisMonthMatch) ||
+
+  (dateFilter === "This Year" && thisYearMatch);
 
     return (
 
@@ -145,25 +188,72 @@ function ReworkList() {
 
       contractorMatch &&
 
-      defectMatch
+      defectMatch &&
+
+      dateMatch
 
     );
 
   });
+  const exportToExcel = () => {
+
+    if (filtered.length === 0) {
+      alert("No records to export");
+      return;
+    }
+  
+    const worksheet = XLSX.utils.json_to_sheet(filtered);
+  
+    const workbook = XLSX.utils.book_new();
+  
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      "Rework Records"
+    );
+  
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+  
+    const file = new Blob(
+      [excelBuffer],
+      {
+        type:
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      }
+    );
+  
+    saveAs(
+      file,
+      "Rework_Records.xlsx"
+    );
+  };
 
   return (
 
     <div>
 
-      <h1>
-
-        Rework Records
-
-      </h1>
-
+<h1
+  style={{
+    color: T.textPrimary,
+    fontFamily: "'Space Grotesk', sans-serif",
+    marginBottom: "1.5rem",
+  }}
+>
+  Rework Records
+</h1>
       <div className="filters">
 
         <input
+  style={{
+    background: T.surface,
+    color: T.textPrimary,
+    border: `1px solid ${T.border}`,
+    borderRadius: 8,
+    padding: "10px",
+  }}
 
           placeholder="Search Mark No / Contractor / Defect"
 
@@ -177,17 +267,17 @@ function ReworkList() {
 
         />
 
-        <select
-
-          value={plant}
-
-          onChange={(e) =>
-
-            setPlant(e.target.value)
-
-          }
-
-        >
+<select
+  value={plant}
+  onChange={(e) => setPlant(e.target.value)}
+  style={{
+    background: T.surface,
+    color: T.textPrimary,
+    border: `1px solid ${T.border}`,
+    borderRadius: 8,
+    padding: "10px",
+  }}
+>
 
           {
 
@@ -206,16 +296,18 @@ function ReworkList() {
         </select>
 
         <select
+  value={contractor}
+  onChange={(e) => setContractor(e.target.value)}
+  style={{
+    background: T.surface,
+    color: T.textPrimary,
+    border: `1px solid ${T.border}`,
+    borderRadius: 8,
+    padding: "10px",
+  }}
+>
 
-          value={contractor}
-
-          onChange={(e) =>
-
-            setContractor(e.target.value)
-
-          }
-
-        >
+        
 
           {
 
@@ -234,16 +326,16 @@ function ReworkList() {
         </select>
 
         <select
-
-          value={defectCode}
-
-          onChange={(e) =>
-
-            setDefectCode(e.target.value)
-
-          }
-
-        >
+  value={defectCode}
+  onChange={(e) => setDefectCode(e.target.value)}
+  style={{
+    background: T.surface,
+    color: T.textPrimary,
+    border: `1px solid ${T.border}`,
+    borderRadius: 8,
+    padding: "10px",
+  }}
+>
 
           {
 
@@ -260,19 +352,59 @@ function ReworkList() {
           }
 
         </select>
-        
+
+        <select
+  value={dateFilter}
+  onChange={(e) => setDateFilter(e.target.value)}
+  style={{
+    background: T.surface,
+    color: T.textPrimary,
+    border: `1px solid ${T.border}`,
+    borderRadius: 8,
+    padding: "10px",
+  }}
+>
+          <option value="All">All Time</option>
+          <option value="Today">Today</option>
+          <option value="Last 7 Days">Last 7 Days</option>
+          <option value="This Month">This Month</option>
+          <option value="This Year">This Year</option>
+        </select>
 
 </div>
 
+
 <div
   style={{
-    marginTop: 20,
-    marginBottom: 12,
-    fontSize: 14,
-    fontWeight: 600,
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "15px",
   }}
 >
-  Total Records : {filtered.length}
+  <div
+    style={{
+      color: T.textPrimary,
+      fontWeight: 600,
+    }}
+  >
+    Total Records : {filtered.length}
+  </div>
+
+  <button
+    onClick={exportToExcel}
+    style={{
+      background: "#22C55E",
+      color: "white",
+      border: "none",
+      padding: "10px 18px",
+      borderRadius: 8,
+      cursor: "pointer",
+      fontWeight: 600,
+    }}
+  >
+    Export Excel
+  </button>
 </div>
 
 <ReworkTable
