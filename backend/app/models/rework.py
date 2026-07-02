@@ -8,16 +8,43 @@ class ReworkEntry(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    mark_no = db.Column(db.String(100), nullable=False)
+    # Plant
+    plant = db.Column(
+        db.String(50),
+        nullable=False,
+    )
 
-    project_name = db.Column(db.String(150), nullable=False)
+    # Contractor
+    contractor = db.Column(
+        db.String(100),
+        nullable=False,
+    )
 
-    contractor = db.Column(db.String(100), nullable=False)
+    # Member Mark Number
+    mark_no = db.Column(
+        db.String(100),
+        nullable=False,
+    )
 
-    reason = db.Column(db.String(150), nullable=False)
+    # Defect Code
+    defect_code = db.Column(
+        db.String(50),
+        nullable=False,
+    )
 
-    rework_date = db.Column(db.Date, nullable=False)
+    # Optional Remarks
+    remarks = db.Column(
+        db.Text,
+        nullable=True,
+    )
 
+    # Date of Inspection
+    inspection_date = db.Column(
+        db.Date,
+        nullable=False,
+    )
+
+    # Record Creation Time
     created_at = db.Column(
         db.DateTime,
         nullable=False,
@@ -27,10 +54,11 @@ class ReworkEntry(db.Model):
     def to_dict(self):
         return {
             "id": self.id,
-            "mark_no": self.mark_no,
-            "project_name": self.project_name,
+            "plant": self.plant,
             "contractor": self.contractor,
-            "reason": self.reason,
-            "rework_date": self.rework_date.isoformat(),
+            "mark_no": self.mark_no,
+            "defect_code": self.defect_code,
+            "remarks": self.remarks,
+            "inspection_date": self.inspection_date.isoformat(),
             "created_at": self.created_at.isoformat(),
         }

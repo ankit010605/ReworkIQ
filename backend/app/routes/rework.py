@@ -16,6 +16,9 @@ rework_bp = Blueprint(
 )
 
 
+# ===========================
+# GET ALL REWORKS
+# ===========================
 @rework_bp.route("/api/rework", methods=["GET"])
 def get_reworks():
 
@@ -26,22 +29,25 @@ def get_reworks():
     )
 
 
+# ===========================
+# ADD REWORK
+# ===========================
 @rework_bp.route("/api/rework", methods=["POST"])
 def add_rework():
 
     data = request.get_json()
 
     required_fields = [
-        "mark_no",
-        "project_name",
+        "plant",
         "contractor",
-        "reason",
-        "rework_date",
+        "mark_no",
+        "defect_code",
+        "inspection_date",
     ]
 
     for field in required_fields:
 
-        if field not in data:
+        if field not in data or data[field] == "":
 
             return (
                 jsonify(
@@ -52,8 +58,8 @@ def add_rework():
                 400,
             )
 
-    data["rework_date"] = datetime.strptime(
-        data["rework_date"],
+    data["inspection_date"] = datetime.strptime(
+        data["inspection_date"],
         "%Y-%m-%d",
     ).date()
 
@@ -65,6 +71,9 @@ def add_rework():
     )
 
 
+# ===========================
+# UPDATE REWORK
+# ===========================
 @rework_bp.route("/api/rework/<int:rework_id>", methods=["PUT"])
 def edit_rework(rework_id):
 
@@ -75,8 +84,8 @@ def edit_rework(rework_id):
 
     data = request.get_json()
 
-    data["rework_date"] = datetime.strptime(
-        data["rework_date"],
+    data["inspection_date"] = datetime.strptime(
+        data["inspection_date"],
         "%Y-%m-%d",
     ).date()
 
@@ -85,6 +94,9 @@ def edit_rework(rework_id):
     return jsonify(updated.to_dict())
 
 
+# ===========================
+# DELETE REWORK
+# ===========================
 @rework_bp.route("/api/rework/<int:rework_id>", methods=["DELETE"])
 def remove_rework(rework_id):
 
@@ -102,6 +114,9 @@ def remove_rework(rework_id):
     )
 
 
+# ===========================
+# DASHBOARD STATISTICS
+# ===========================
 @rework_bp.route("/api/stats", methods=["GET"])
 def stats():
 
@@ -110,69 +125,115 @@ def stats():
     total = len(reworks)
 
     contractor_counts = {}
-    reason_counts = {}
+    plant_counts = {}
+    defect_counts = {}
     monthly_counts = {}
+
     for item in reworks:
+
+        # Contractor Count
         contractor_counts[item.contractor] = (
             contractor_counts.get(item.contractor, 0) + 1
         )
 
-        reason_counts[item.reason] = (
-            reason_counts.get(item.reason, 0) + 1
+        # Plant Count
+        plant_counts[item.plant] = (
+            plant_counts.get(item.plant, 0) + 1
         )
-        month = item.rework_date.strftime("%B")
+
+        # Defect Count
+        defect_counts[item.defect_code] = (
+            defect_counts.get(item.defect_code, 0) + 1
+        )
+
+        # Monthly Count
+        month = item.inspection_date.strftime("%B")
 
         monthly_counts[month] = (
-                monthly_counts.get(month, 0) + 1
-)
+            monthly_counts.get(month, 0) + 1
+        )
 
+    # -----------------------------
     # Top Contractor
+    # -----------------------------
     if contractor_counts:
-        top_contractor = max(
+
+        top = max(
             contractor_counts,
             key=contractor_counts.get
         )
 
-        top_contractor_data = {
-            "name": top_contractor,
-            "count": contractor_counts[top_contractor],
+        top_contractor = {
+            "name": top,
+            "count": contractor_counts[top],
         }
-    else:
-        top_contractor_data = None
 
-    # Most Common Reason
-    if reason_counts:
-        common_reason = max(
-            reason_counts,
-            key=reason_counts.get
+    else:
+
+        top_contractor = None
+
+    # -----------------------------
+    # Top Plant
+    # -----------------------------
+    if plant_counts:
+
+        top = max(
+            plant_counts,
+            key=plant_counts.get
         )
 
-        common_reason_data = {
-            "reason": common_reason,
-            "count": reason_counts[common_reason],
+        top_plant = {
+            "name": top,
+            "count": plant_counts[top],
         }
-    else:
-        common_reason_data = None
 
+    else:
+
+        top_plant = None
+
+    # -----------------------------
+    # Most Common Defect
+    # -----------------------------
+    if defect_counts:
+
+        top = max(
+            defect_counts,
+            key=defect_counts.get
+        )
+
+        most_common_defect = {
+            "defect": top,
+            "count": defect_counts[top],
+        }
+
+    else:
+
+        most_common_defect = None
+
+    # -----------------------------
     # Latest Entry
+    # -----------------------------
     if reworks:
-        latest = max(
+
+        latest_entry = max(
             reworks,
             key=lambda x: x.created_at
-        )
+        ).to_dict()
 
-        latest_entry = latest.to_dict()
     else:
+
         latest_entry = None
 
     return jsonify(
         {
             "total_reworks": total,
+            "plant_counts": plant_counts,
             "contractor_counts": contractor_counts,
-            "reason_counts": reason_counts,
+            "defect_counts": defect_counts,
             "monthly_counts": monthly_counts,
-            "top_contractor": top_contractor_data,
-            "most_common_reason": common_reason_data,
+            "top_plant": top_plant,
+            "top_contractor": top_contractor,
+            "most_common_defect": most_common_defect,
             "latest_entry": latest_entry,
         }
     )

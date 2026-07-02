@@ -1,226 +1,294 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 import ReworkTable from "../components/ReworkTable";
 
-
 function ReworkList() {
 
-  const [reworks,setReworks] = useState([]);
-
-  const [search,setSearch] = useState("");
-
-  const [contractor,setContractor] = useState("All");
-
-  const [reason,setReason] = useState("All");
   const navigate = useNavigate();
 
+  const [reworks, setReworks] = useState([]);
 
-  const fetchReworks = async()=>{
+  const [search, setSearch] = useState("");
 
-    const response = await api.get("/rework");
+  const [plant, setPlant] = useState("All");
 
-    setReworks(response.data);
+  const [contractor, setContractor] = useState("All");
+
+  const [defectCode, setDefectCode] = useState("All");
+
+  const fetchReworks = async () => {
+
+    try {
+
+      const response = await api.get("/rework");
+
+      setReworks(response.data);
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
 
   };
 
-
-  useEffect(()=>{
+  useEffect(() => {
 
     fetchReworks();
 
-  },[]);
+  }, []);
+
   const editRework = (id) => {
 
     navigate(`/edit/${id}`);
-  
+
   };
 
+  const deleteRework = async (id) => {
 
-  const deleteRework = async(id)=>{
-
-    const confirmDelete =
-      window.confirm(
-        "Delete this record?"
-      );
-
-
-    if(!confirmDelete)
-      return;
-
-
-    await api.delete(
-      `/rework/${id}`
+    const confirmDelete = window.confirm(
+      "Delete this rework record?"
     );
 
+    if (!confirmDelete) return;
 
-    fetchReworks();
+    try {
+
+      await api.delete(`/rework/${id}`);
+
+      fetchReworks();
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
 
   };
 
+  const plants = useMemo(() => [
 
-
-  const contractors = [
     "All",
+
     ...new Set(
-      reworks.map(
-        item=>item.contractor
-      )
-    )
-  ];
+      reworks.map(item => item.plant)
+    ),
 
+  ], [reworks]);
 
-  const reasons = [
+  const contractors = useMemo(() => [
+
     "All",
+
     ...new Set(
-      reworks.map(
-        item=>item.reason
-      )
-    )
-  ];
+      reworks.map(item => item.contractor)
+    ),
 
+  ], [reworks]);
 
+  const defectCodes = useMemo(() => [
 
-  const filtered = reworks.filter(item=>{
+    "All",
 
+    ...new Set(
+      reworks.map(item => item.defect_code)
+    ),
+
+  ], [reworks]);
+
+  const filtered = reworks.filter((item) => {
+
+    const keyword = search.toLowerCase();
 
     const textMatch =
-      item.mark_no
-      .toLowerCase()
-      .includes(
-        search.toLowerCase()
-      )
-      ||
-      item.project_name
-      .toLowerCase()
-      .includes(
-        search.toLowerCase()
-      );
 
+      item.mark_no.toLowerCase().includes(keyword)
+
+      ||
+
+      item.contractor.toLowerCase().includes(keyword)
+
+      ||
+
+      item.defect_code.toLowerCase().includes(keyword);
+
+    const plantMatch =
+
+      plant === "All"
+
+      ||
+
+      item.plant === plant;
 
     const contractorMatch =
-      contractor==="All"
+
+      contractor === "All"
+
       ||
-      item.contractor===contractor;
 
+      item.contractor === contractor;
 
-    const reasonMatch =
-      reason==="All"
+    const defectMatch =
+
+      defectCode === "All"
+
       ||
-      item.reason===reason;
 
-
+      item.defect_code === defectCode;
 
     return (
-      textMatch
-      &&
-      contractorMatch
-      &&
-      reasonMatch
-    );
 
+      textMatch &&
+
+      plantMatch &&
+
+      contractorMatch &&
+
+      defectMatch
+
+    );
 
   });
 
+  return (
 
+    <div>
 
-return (
+      <h1>
 
-<div>
+        Rework Records
 
-<h1>
-Rework Records
-</h1>
+      </h1>
 
+      <div className="filters">
 
+        <input
 
-<div className="filters">
+          placeholder="Search Mark No / Contractor / Defect"
 
+          value={search}
 
-<input
+          onChange={(e) =>
 
-placeholder="Search Mark / Project"
+            setSearch(e.target.value)
 
-value={search}
+          }
 
-onChange={
-e=>setSearch(e.target.value)
-}
+        />
 
-/>
+        <select
 
+          value={plant}
 
+          onChange={(e) =>
 
-<select
+            setPlant(e.target.value)
 
-value={contractor}
+          }
 
-onChange={
-e=>setContractor(e.target.value)
-}
+        >
 
->
+          {
 
-{
-contractors.map(c=>(
+            plants.map((p) => (
 
-<option key={c}>
-{c}
-</option>
+              <option key={p}>
 
-))
-}
+                {p}
 
+              </option>
 
-</select>
+            ))
 
+          }
 
+        </select>
 
+        <select
 
-<select
+          value={contractor}
 
-value={reason}
+          onChange={(e) =>
 
-onChange={
-e=>setReason(e.target.value)
-}
+            setContractor(e.target.value)
 
->
+          }
 
-{
-reasons.map(r=>(
+        >
 
-<option key={r}>
-{r}
-</option>
+          {
 
-))
-}
+            contractors.map((c) => (
 
+              <option key={c}>
 
-</select>
+                {c}
 
+              </option>
+
+            ))
+
+          }
+
+        </select>
+
+        <select
+
+          value={defectCode}
+
+          onChange={(e) =>
+
+            setDefectCode(e.target.value)
+
+          }
+
+        >
+
+          {
+
+            defectCodes.map((d) => (
+
+              <option key={d}>
+
+                {d}
+
+              </option>
+
+            ))
+
+          }
+
+        </select>
+        
 
 </div>
 
-
+<div
+  style={{
+    marginTop: 20,
+    marginBottom: 12,
+    fontSize: 14,
+    fontWeight: 600,
+  }}
+>
+  Total Records : {filtered.length}
+</div>
 
 <ReworkTable
 
-data={filtered}
+  data={filtered}
 
-onDelete={deleteRework}
+  onEdit={editRework}
 
-onEdit={editRework}
+  onDelete={deleteRework}
 
 />
 
-
 </div>
 
-)
+);
 
 }
-
 
 export default ReworkList;

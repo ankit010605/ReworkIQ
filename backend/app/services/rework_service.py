@@ -14,11 +14,12 @@ def get_rework_by_id(rework_id):
 
 def create_rework(data):
     rework = ReworkEntry(
-        mark_no=data["mark_no"],
-        project_name=data["project_name"],
+        plant=data["plant"],
         contractor=data["contractor"],
-        reason=data["reason"],
-        rework_date=data["rework_date"],
+        mark_no=data["mark_no"],
+        defect_code=data["defect_code"],
+        remarks=data.get("remarks"),
+        inspection_date=data["inspection_date"],
     )
 
     db.session.add(rework)
@@ -28,11 +29,12 @@ def create_rework(data):
 
 
 def update_rework(rework, data):
-    rework.mark_no = data["mark_no"]
-    rework.project_name = data["project_name"]
+    rework.plant = data["plant"]
     rework.contractor = data["contractor"]
-    rework.reason = data["reason"]
-    rework.rework_date = data["rework_date"]
+    rework.mark_no = data["mark_no"]
+    rework.defect_code = data["defect_code"]
+    rework.remarks = data.get("remarks")
+    rework.inspection_date = data["inspection_date"]
 
     db.session.commit()
 
