@@ -517,7 +517,10 @@ def create_report(stats):
     #         contractor_image = contractor_chart(stats["contractor_counts"])
     #         story.append(Paragraph("Contractor Distribution", SUBHEAD))
     #         story.append(Image(contractor_image, width=3.2 * inch, height=3.2 * inch))
-
+    if stats.get("monthly_counts"):
+    monthly_image = monthly_chart(stats["monthly_counts"])
+    story.append(Paragraph("Monthly Rework Trend", SUBHEAD))
+    story.append(Image(monthly_image, width=6.7*inch, height=2.7*inch))
     story.append(PageBreak())
 
     ####################################################
