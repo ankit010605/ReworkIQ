@@ -495,28 +495,28 @@ def create_report(stats):
     # PAGE 3 — VISUAL ANALYTICS
     ####################################################
 
-    story.extend(section_heading("Visual Analytics"))
+    # story.extend(section_heading("Visual Analytics"))
 
-    if stats.get("monthly_counts"):
-        monthly_image = monthly_chart(stats["monthly_counts"])
-        story.append(Paragraph("Monthly Rework Trend", SUBHEAD))
-        story.append(Image(monthly_image, width=6.7 * inch, height=2.7 * inch))
-        story.append(Spacer(1, 0.3 * inch))
+    # if stats.get("monthly_counts"):
+    #     monthly_image = monthly_chart(stats["monthly_counts"])
+    #     story.append(Paragraph("Monthly Rework Trend", SUBHEAD))
+    #     story.append(Image(monthly_image, width=6.7 * inch, height=2.7 * inch))
+    #     story.append(Spacer(1, 0.3 * inch))
 
-    if stats.get("plant_counts") and stats.get("contractor_counts"):
-        story.append(Paragraph("Plant &amp; Contractor Distribution", SUBHEAD))
-        plant_image = plant_chart(stats["plant_counts"])
-        contractor_image = contractor_chart(stats["contractor_counts"])
-        story.append(side_by_side(plant_image, contractor_image))
-    else:
-        if stats.get("plant_counts"):
-            plant_image = plant_chart(stats["plant_counts"])
-            story.append(Paragraph("Plant Distribution", SUBHEAD))
-            story.append(Image(plant_image, width=3.2 * inch, height=3.2 * inch))
-        if stats.get("contractor_counts"):
-            contractor_image = contractor_chart(stats["contractor_counts"])
-            story.append(Paragraph("Contractor Distribution", SUBHEAD))
-            story.append(Image(contractor_image, width=3.2 * inch, height=3.2 * inch))
+    # if stats.get("plant_counts") and stats.get("contractor_counts"):
+    #     story.append(Paragraph("Plant &amp; Contractor Distribution", SUBHEAD))
+    #     plant_image = plant_chart(stats["plant_counts"])
+    #     contractor_image = contractor_chart(stats["contractor_counts"])
+    #     story.append(side_by_side(plant_image, contractor_image))
+    # else:
+    #     if stats.get("plant_counts"):
+    #         plant_image = plant_chart(stats["plant_counts"])
+    #         story.append(Paragraph("Plant Distribution", SUBHEAD))
+    #         story.append(Image(plant_image, width=3.2 * inch, height=3.2 * inch))
+    #     if stats.get("contractor_counts"):
+    #         contractor_image = contractor_chart(stats["contractor_counts"])
+    #         story.append(Paragraph("Contractor Distribution", SUBHEAD))
+    #         story.append(Image(contractor_image, width=3.2 * inch, height=3.2 * inch))
 
     story.append(PageBreak())
 
