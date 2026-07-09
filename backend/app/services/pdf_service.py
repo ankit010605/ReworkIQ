@@ -2,6 +2,9 @@ from io import BytesIO
 from datetime import datetime
 import tempfile
 
+import matplotlib
+matplotlib.use("Agg")
+
 import matplotlib.pyplot as plt
 
 from reportlab.lib import colors
