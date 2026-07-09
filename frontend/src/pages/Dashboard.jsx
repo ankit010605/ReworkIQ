@@ -1,7 +1,8 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 import api from "../api/api";
 import PieAnalytics from "../components/PieAnalytics";
-
+// import { generateDashboardReport } from "../utils/pdf/dashboardReport";
 import {
   LineChart,
   Line,
@@ -70,6 +71,7 @@ function StatCard({
   accent,
   dimAccent,
   icon,
+  subtitle,
 }) {
   return (
     <div
@@ -81,6 +83,7 @@ function StatCard({
         position: "relative",
         overflow: "hidden",
         animation: "riq-fadein .35s ease both",
+        height: "100%",
       }}
     >
       <div
@@ -138,209 +141,39 @@ function StatCard({
       >
         {value}
       </h2>
-    </div>
-  );
-}
-function BarChart({
-  title,
-  data,
-  color,
-}) {
 
-  const total =
-    data.reduce(
-      (sum, item) => sum + item.count,
-      0
-    );
-
-  const max =
-    Math.max(
-      ...data.map(
-        item => item.count
-      ),
-      1
-    );
-
-  return (
-
-    <div
-      style={{
-        background: T.surface,
-        border: `1px solid ${T.border}`,
-        borderRadius: 14,
-        padding: "1.25rem",
-        animation: "riq-fadein .45s ease both",
-      }}
-    >
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          marginBottom: 16,
-        }}
-      >
-
-        <div>
-
-          <p
-            style={{
-              margin: 0,
-              color: T.textSecondary,
-              fontSize: 13,
-              fontFamily:
-                "'Space Grotesk',sans-serif",
-            }}
-          >
-            {title}
-          </p>
-
-          <h2
-            style={{
-              margin: "4px 0 0",
-              color: T.textPrimary,
-              fontFamily:
-                "'Space Grotesk',sans-serif",
-            }}
-          >
-            {total}
-          </h2>
-
-        </div>
-
-        <span
+      {subtitle && (
+        <p
           style={{
-            fontSize: 11,
-            color: color,
-            border: `1px solid ${color}55`,
-            background: `${color}20`,
-            padding: "4px 10px",
-            borderRadius: 8,
+            margin: "6px 0 0",
+            color: T.textSecondary,
+            fontSize: 12,
           }}
         >
-          events
-        </span>
-
-      </div>
-
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 12,
-        }}
-      >
-
-        {data.map(
-          (
-            item,
-            index
-          ) => {
-
-            const width =
-              Math.round(
-                (item.count / max) * 100
-              );
-
-            return (
-
-              <div
-                key={item.label}
-              >
-
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent:
-                      "space-between",
-                    marginBottom: 5,
-                  }}
-                >
-
-                  <span
-                    style={{
-                      color:
-                        index === 0
-                          ? T.textPrimary
-                          : T.textSecondary,
-                      fontSize: 12,
-                    }}
-                  >
-                    {item.label}
-                  </span>
-
-                  <span
-                    style={{
-                      color: color,
-                      fontWeight: 600,
-                      fontSize: 12,
-                    }}
-                  >
-                    {item.count}
-                  </span>
-
-                </div>
-
-                <div
-                  style={{
-                    height: 6,
-                    borderRadius: 3,
-                    background:
-                      `${color}22`,
-                    overflow: "hidden",
-                  }}
-                >
-
-                  <div
-                    style={{
-                      width: `${width}%`,
-                      height: "100%",
-                      background: color,
-                      borderRadius: 3,
-                      animation:
-                        `riq-bar .6s ease ${index * 80}ms both`,
-                    }}
-                  />
-
-                </div>
-
-              </div>
-
-            );
-
-          }
-        )}
-
-      </div>
-
+          {subtitle}
+        </p>
+      )}
     </div>
-
   );
-
 }
+
 function MonthlyTrend({ data }) {
-
   return (
-
     <div
       style={{
         background: T.surface,
         border: `1px solid ${T.border}`,
         borderRadius: 14,
         padding: "1.5rem",
-        marginBottom: "1.5rem",
         animation: "riq-fadein .45s ease both",
       }}
     >
-
       <h3
         style={{
           marginTop: 0,
           marginBottom: 20,
           color: T.textPrimary,
-          fontFamily:
-            "'Space Grotesk',sans-serif",
+          fontFamily: "'Space Grotesk',sans-serif",
         }}
       >
         Monthly Inspection Trend
@@ -352,13 +185,8 @@ function MonthlyTrend({ data }) {
           height: 300,
         }}
       >
-
         <ResponsiveContainer>
-
-          <LineChart
-            data={data}
-          >
-
+          <LineChart data={data}>
             <CartesianGrid
               strokeDasharray="3 3"
               stroke={T.border}
@@ -383,69 +211,227 @@ function MonthlyTrend({ data }) {
               dot={{ r: 5 }}
               activeDot={{ r: 8 }}
             />
-
           </LineChart>
-
         </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
 
+function RankedListCard({
+  title,
+  data,
+  color,
+  maxItems = 5,
+}) {
+  const displayData = data.slice(0, maxItems);
+
+  return (
+    <div
+      style={{
+        background: T.surface,
+        border: `1px solid ${T.border}`,
+        borderRadius: 14,
+        padding: "1.25rem",
+        animation: "riq-fadein .45s ease both",
+        height: "100%",
+      }}
+    >
+      <h3
+        style={{
+          margin: "0 0 1rem",
+          color: T.textPrimary,
+          fontFamily: "'Space Grotesk',sans-serif",
+          fontSize: 14,
+        }}
+      >
+        {title}
+      </h3>
+
+      <div>
+        {displayData.map((item, index) => (
+          <div
+            key={item.label}
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "0.75rem 0",
+              borderBottom:
+                index < displayData.length - 1
+                  ? `1px solid ${T.border}`
+                  : "none",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+              }}
+            >
+              <div
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: "50%",
+                  background: color + "22",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: color,
+                }}
+              >
+                {index + 1}
+              </div>
+
+              <span
+                style={{
+                  color: T.textPrimary,
+                  fontSize: 13,
+                }}
+              >
+                {item.label}
+              </span>
+            </div>
+
+            <span
+              style={{
+                color: color,
+                fontWeight: 600,
+                fontSize: 13,
+              }}
+            >
+              {item.count}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function InsightCard({
+  title,
+  content,
+  iconColor,
+  icon,
+}) {
+  return (
+    <div
+      style={{
+        background: T.surface,
+        border: `1px solid ${T.border}`,
+        borderRadius: 14,
+        padding: "1.3rem",
+        animation: "riq-fadein .45s ease both",
+        height: "100%",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          gap: 12,
+          marginBottom: 12,
+        }}
+      >
+        <div
+          style={{
+            fontSize: 20,
+          }}
+        >
+          {icon}
+        </div>
+
+        <h4
+          style={{
+            margin: 0,
+            color: iconColor,
+            fontFamily: "'Space Grotesk',sans-serif",
+            fontSize: 14,
+          }}
+        >
+          {title}
+        </h4>
       </div>
 
+      <p
+        style={{
+          color: T.textSecondary,
+          lineHeight: 1.6,
+          margin: 0,
+          fontSize: 13,
+        }}
+      >
+        {content}
+      </p>
     </div>
-
   );
-
 }
 
 export default function Dashboard() {
-
-  const [stats, setStats] =
-    useState(null);
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [error, setError] =
-    useState(false);
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const handleGenerateReport = async () => {
+    try {
+      const response = await axios.get(
+        "http://127.0.0.1:5000/api/report/pdf",
+        {
+          responseType: "blob",
+        }
+      );
+  
+      const url = window.URL.createObjectURL(
+        new Blob([response.data])
+      );
+  
+      const link = document.createElement("a");
+  
+      link.href = url;
+  
+      link.setAttribute(
+        "download",
+        "REWO_Rework_Analytics_Report.pdf"
+      );
+  
+      document.body.appendChild(link);
+  
+      link.click();
+  
+      link.remove();
+  
+      window.URL.revokeObjectURL(url);
+  
+    } catch (error) {
+      console.error(error);
+      alert("Failed to generate report");
+    }
+  };
 
   useEffect(() => {
-
     loadDashboard();
-
   }, []);
 
   async function loadDashboard() {
-
     setLoading(true);
-
     setError(false);
 
     try {
-
-      const response =
-        await api.get("/stats");
-
+      const response = await api.get("/stats");
       setStats(response.data);
-
-    }
-
-    catch (err) {
-
+    } catch (err) {
       console.error(err);
-
       setError(true);
-
-    }
-
-    finally {
-
+    } finally {
       setLoading(false);
-
     }
-
   }
 
   const shell = (children) => (
-
     <div
       style={{
         minHeight: "100vh",
@@ -454,20 +440,13 @@ export default function Dashboard() {
         fontFamily: "'Inter',sans-serif",
       }}
     >
-
-      <style>
-        {globalStyle}
-      </style>
-
+      <style>{globalStyle}</style>
       {children}
-
     </div>
-
   );
+
   if (loading) {
-
     return shell(
-
       <div
         style={{
           display: "flex",
@@ -478,7 +457,6 @@ export default function Dashboard() {
           gap: 14,
         }}
       >
-
         <div
           style={{
             width: 36,
@@ -498,17 +476,12 @@ export default function Dashboard() {
         >
           Loading Dashboard...
         </span>
-
       </div>
-
     );
-
   }
 
   if (error) {
-
     return shell(
-
       <div
         style={{
           display: "flex",
@@ -519,7 +492,6 @@ export default function Dashboard() {
           gap: 12,
         }}
       >
-
         <h2
           style={{
             color: T.red,
@@ -542,42 +514,36 @@ export default function Dashboard() {
         >
           Retry
         </button>
-
       </div>
-
     );
-
   }
 
-  const contractorData =
-    Object.entries(
-      stats.contractor_counts ?? {}
-    )
-      .map(([label, count]) => ({
-        label,
-        count,
-      }))
-      .sort((a, b) => b.count - a.count);
+  const contractorData = Object.entries(
+    stats.contractor_counts ?? {}
+  )
+    .map(([label, count]) => ({
+      label,
+      count,
+    }))
+    .sort((a, b) => b.count - a.count);
 
-  const defectData =
-    Object.entries(
-      stats.defect_code_counts ?? {}
-    )
-      .map(([label, count]) => ({
-        label,
-        count,
-      }))
-      .sort((a, b) => b.count - a.count);
+  const defectData = Object.entries(
+    stats.defect_code_counts ?? {}
+  )
+    .map(([label, count]) => ({
+      label,
+      count,
+    }))
+    .sort((a, b) => b.count - a.count);
 
-  const plantData =
-    Object.entries(
-      stats.plant_counts ?? {}
-    )
-      .map(([label, count]) => ({
-        label,
-        count,
-      }))
-      .sort((a, b) => b.count - a.count);
+  const plantData = Object.entries(
+    stats.plant_counts ?? {}
+  )
+    .map(([label, count]) => ({
+      label,
+      count,
+    }))
+    .sort((a, b) => b.count - a.count);
 
   const monthOrder = [
     "January",
@@ -594,750 +560,385 @@ export default function Dashboard() {
     "December",
   ];
 
-  const monthlyData =
-    monthOrder
-      .filter(
-        month =>
-          stats.monthly_counts?.[month]
-      )
-      .map(month => ({
-        label: month,
-        count:
-          stats.monthly_counts[month],
-      }));
+  const monthlyData = monthOrder
+    .filter((month) => stats.monthly_counts?.[month])
+    .map((month) => ({
+      label: month,
+      count: stats.monthly_counts[month],
+    }));
 
-  const total =
-    stats.total_reworks ?? 0;
+  const total = stats.total_reworks ?? 0;
 
-  const heatPct =
-    Math.min(
-      100,
-      Math.round(
-        (total / 200) * 100
-      )
-    );
-    return shell(
+  // Calculate Quality Score
+  const qualityScore = Math.max(60, 100 - total * 2);
 
-      <div
-        style={{
-          maxWidth: 1100,
-          margin: "0 auto",
-        }}
-      >
-  
-        {/* Heat Strip */}
-  
-        <div
-          style={{
-            marginBottom: "1.5rem",
-          }}
-        >
-  
-          <div
-            style={{
-              height: 4,
-              borderRadius: 3,
-              background: T.border,
-              overflow: "hidden",
-            }}
-          >
-  
-            <div
-              style={{
-                height: "100%",
-                width: `${heatPct}%`,
-                background: `linear-gradient(
-                  90deg,
-                  ${T.blue},
-                  ${T.amber},
-                  ${T.red}
-                )`,
-                transition: "width 1s ease",
-              }}
-            />
-  
-          </div>
-  
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginTop: 5,
-              color: T.textMuted,
-              fontSize: 10,
-            }}
-          >
-  
-            <span>Low</span>
-  
-            <span>Inspection Activity</span>
-  
-            <span>High</span>
-  
-          </div>
-  
-        </div>
-  
-        {/* Header */}
-  
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-            borderBottom: `1px solid ${T.border}`,
-            paddingBottom: "1.2rem",
-            marginBottom: "1.8rem",
-          }}
-        >
-  
-          <div>
-  
-            <h1
-              style={{
-                margin: 0,
-                color: T.textPrimary,
-                fontSize: 30,
-                fontFamily:
-                  "'Space Grotesk',sans-serif",
-              }}
-            >
-              ReworkIQ Analytics
-            </h1>
-  
-            <p
-              style={{
-                marginTop: 5,
-                color: T.textSecondary,
-              }}
-            >
-              Welding Quality Monitoring Dashboard
-            </p>
-  
-          </div>
-  
-          <div
-            style={{
-              background: T.greenDim,
-              color: T.green,
-              border:
-                "1px solid rgba(34,197,94,.35)",
-              borderRadius: 20,
-              padding: "6px 14px",
-              fontWeight: 600,
-              fontSize: 12,
-            }}
-          >
-            ● LIVE
-          </div>
-  
-        </div>
-  
-        {/* KPI Cards */}
-  
+  const getQualityStatus = (score) => {
+    if (score >= 85) return "Excellent";
+    if (score >= 70) return "Good";
+    return "Needs Improvement";
+  };
+
+  const getQualityColor = (score) => {
+    if (score >= 85) return T.green;
+    if (score >= 70) return T.amber;
+    return T.red;
+  };
+
+  return shell(
+    <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+      {/* HEADER */}
+      <div style={{ marginBottom: "2rem" }}>
         <div
           style={{
             display: "grid",
-            gridTemplateColumns:
-              "repeat(auto-fit,minmax(190px,1fr))",
-            gap: 14,
-            marginBottom: "1.8rem",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "2rem",
+            alignItems: "flex-start",
+            marginBottom: "2rem",
           }}
         >
-  
-          <StatCard
-            title="Total Reworks"
-            value={stats.total_reworks}
-            accent={T.red}
-            dimAccent={T.redDim}
-            icon="🔄"
-          />
-  
-          <StatCard
-            title="Top Contractor"
-            value={
-              stats.top_contractor?.name || "-"
-            }
-            accent={T.blue}
-            dimAccent={T.blueDim}
-            icon="👷"
-          />
-  
-          <StatCard
-            title="Top Plant"
-            value={
-              stats.top_plant?.name || "-"
-            }
-            accent={T.green}
-            dimAccent={T.greenDim}
-            icon="🏭"
-          />
-  
-          <StatCard
-            title="Latest Mark"
-            value={
-              stats.latest_entry?.mark_no || "-"
-            }
-            accent={T.amber}
-            dimAccent={T.amberDim}
-            icon="🏷️"
-          />
-  
-        </div>
-  
-        <MonthlyTrend
-          data={monthlyData}
-        />
-              {/* Pie Charts */}
+          <div>
+            <h1
+              style={{
+                fontSize: "2rem",
+                color: T.textPrimary,
+                fontFamily: "'Space Grotesk',sans-serif",
+                fontWeight: 700,
+                margin: 0,
+              }}
+            >
+              ReworkIQ Analytics Dashboard
+            </h1>
 
+            <p
+              style={{
+                color: T.textSecondary,
+                fontSize: 13,
+                marginTop: "0.5rem",
+                margin: "0.5rem 0 0",
+              }}
+            >
+              Executive Quality & Rework Monitoring
+            </p>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              gap: "0.75rem",
+              justifyContent: "flex-end",
+              flexWrap: "wrap",
+              alignItems: "center",
+            }}
+          >
+            <button
+              style={{
+                color: T.textSecondary,
+                border: `1px solid ${T.border}`,
+                fontSize: 12,
+                background: "transparent",
+                padding: "6px 12px",
+                borderRadius: 6,
+                cursor: "pointer",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.borderColor = T.blue;
+                e.target.style.color = T.blue;
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.borderColor = T.border;
+                e.target.style.color = T.textSecondary;
+              }}
+            >
+              📅 Date Range
+            </button>
+
+            <button
+              style={{
+                color: T.textSecondary,
+                border: `1px solid ${T.border}`,
+                fontSize: 12,
+                background: "transparent",
+                padding: "6px 12px",
+                borderRadius: 6,
+                cursor: "pointer",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.borderColor = T.green;
+                e.target.style.color = T.green;
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.borderColor = T.border;
+                e.target.style.color = T.textSecondary;
+              }}
+            >
+              🏭 Plant
+            </button>
+
+            <button
+              style={{
+                color: T.textSecondary,
+                border: `1px solid ${T.border}`,
+                fontSize: 12,
+                background: "transparent",
+                padding: "6px 12px",
+                borderRadius: 6,
+                cursor: "pointer",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.borderColor = T.blue;
+                e.target.style.color = T.blue;
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.borderColor = T.border;
+                e.target.style.color = T.textSecondary;
+              }}
+            >
+              👷 Contractor
+            </button>
+
+            <button
+              style={{
+                background: T.blue,
+                color: "#fff",
+                fontSize: 12,
+                border: "none",
+                padding: "6px 12px",
+                borderRadius: 6,
+                cursor: "pointer",
+                transition: "opacity 0.2s",
+              }}
+              onClick={handleGenerateReport}
+              onMouseEnter={(e) => {
+                e.target.style.opacity = 0.9;
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.opacity = 1;
+              }}
+            >
+              📊 Generate Report
+            </button>
+          </div>
+        </div>
+
+        <div
+          style={{
+            height: 1,
+            background: T.border,
+          }}
+        />
+      </div>
+
+      {/* SECTION 1: Executive KPI Cards */}
       <div
         style={{
           display: "grid",
-          gridTemplateColumns:
-            "repeat(auto-fit,minmax(350px,1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
           gap: "1rem",
           marginBottom: "2rem",
         }}
       >
-
-        <PieAnalytics
-          title="Plant Distribution"
-          data={plantData}
+        <StatCard
+          title="Total Reworks"
+          value={stats.total_reworks ?? 0}
+          accent={T.red}
+          dimAccent={T.redDim}
+          icon="🔄"
+          subtitle="All Records"
         />
 
-        <PieAnalytics
-          title="Contractor Distribution"
-          data={contractorData}
+        <StatCard
+          title="Top Contractor"
+          value={stats.top_contractor?.name || "-"}
+          accent={T.blue}
+          dimAccent={T.blueDim}
+          icon="👷"
+          subtitle={`${stats.top_contractor?.count || 0} cases`}
         />
 
+        <StatCard
+          title="Top Plant"
+          value={stats.top_plant?.name || "-"}
+          accent={T.green}
+          dimAccent={T.greenDim}
+          icon="🏭"
+          subtitle={`${stats.top_plant?.count || 0} cases`}
+        />
+
+        <StatCard
+          title="Quality Performance"
+          value={`${qualityScore}%`}
+          accent={getQualityColor(qualityScore)}
+          dimAccent={
+            qualityScore >= 85
+              ? T.greenDim
+              : qualityScore >= 70
+              ? T.amberDim
+              : T.redDim
+          }
+          icon={
+            qualityScore >= 85
+              ? "✓"
+              : qualityScore >= 70
+              ? "!"
+              : "⚠"
+          }
+          subtitle={getQualityStatus(qualityScore)}
+        />
       </div>
 
-      {/* Breakdown */}
-
-      <p
-        style={{
-          fontSize: 10,
-          fontWeight: 600,
-          letterSpacing: ".8px",
-          textTransform: "uppercase",
-          color: T.textMuted,
-          margin: "0 0 .8rem",
-        }}
-      >
-        Analytics Breakdown
-      </p>
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns:
-            "repeat(auto-fit,minmax(300px,1fr))",
-          gap: 14,
-        }}
-      >
-
-        <BarChart
-          title="Contractor Distribution"
-          data={contractorData}
-          color={T.blue}
-        />
-
-        <BarChart
-          title="Defect Code Distribution"
-          data={defectData}
-          color={T.red}
-        />
-
+      {/* SECTION 2: Monthly Trend */}
+      <div style={{ marginBottom: "2rem" }}>
+        <MonthlyTrend data={monthlyData} />
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns:
-            "repeat(auto-fit,minmax(300px,1fr))",
-          gap: 14,
-          marginTop: 20,
-        }}
-      >
-
-        <BarChart
-          title="Plant Distribution"
-          data={plantData}
-          color={T.green}
-        />
-
-        <BarChart
-          title="Top Defect Codes"
-          data={defectData.slice(0,5)}
-          color={T.amber}
-        />
-
-      </div>
-            {/* Summary Cards */}
-
-            <div
-        style={{
-          display: "grid",
-          gridTemplateColumns:
-            "repeat(auto-fit,minmax(250px,1fr))",
-          gap: 14,
-          marginTop: "2rem",
-        }}
-      >
-
-        <div
+      {/* SECTION 3: Distribution Charts */}
+      <div style={{ marginBottom: "2rem" }}>
+        <p
           style={{
-            background: T.surface,
-            border: `1px solid ${T.border}`,
-            borderRadius: 14,
-            padding: "1.2rem",
-          }}
-        >
-
-          <p
-            style={{
-              margin: 0,
-              color: T.textMuted,
-              fontSize: 11,
-              textTransform: "uppercase",
-              letterSpacing: ".8px",
-            }}
-          >
-            Top Contractor
-          </p>
-
-          <h2
-            style={{
-              margin: "10px 0 5px",
-              color: T.blue,
-              fontFamily:
-                "'Space Grotesk',sans-serif",
-            }}
-          >
-            {stats.top_contractor?.name || "-"}
-          </h2>
-
-          <p
-            style={{
-              margin: 0,
-              color: T.textSecondary,
-            }}
-          >
-            Total Reworks :
-            {" "}
-            {stats.top_contractor?.count || 0}
-          </p>
-
-        </div>
-
-        <div
-          style={{
-            background: T.surface,
-            border: `1px solid ${T.border}`,
-            borderRadius: 14,
-            padding: "1.2rem",
-          }}
-        >
-
-          <p
-            style={{
-              margin: 0,
-              color: T.textMuted,
-              fontSize: 11,
-              textTransform: "uppercase",
-              letterSpacing: ".8px",
-            }}
-          >
-            Top Plant
-          </p>
-
-          <h2
-            style={{
-              margin: "10px 0 5px",
-              color: T.green,
-              fontFamily:
-                "'Space Grotesk',sans-serif",
-            }}
-          >
-            {stats.top_plant?.name || "-"}
-          </h2>
-
-          <p
-            style={{
-              margin: 0,
-              color: T.textSecondary,
-            }}
-          >
-            Total Reworks :
-            {" "}
-            {stats.top_plant?.count || 0}
-          </p>
-
-        </div>
-
-        <div
-          style={{
-            background: T.surface,
-            border: `1px solid ${T.border}`,
-            borderRadius: 14,
-            padding: "1.2rem",
-          }}
-        >
-
-          <p
-            style={{
-              margin: 0,
-              color: T.textMuted,
-              fontSize: 11,
-              textTransform: "uppercase",
-              letterSpacing: ".8px",
-            }}
-          >
-            Latest Inspection
-          </p>
-
-          <h2
-            style={{
-              margin: "10px 0 5px",
-              color: T.amber,
-              fontFamily:
-                "'Space Grotesk',sans-serif",
-            }}
-          >
-            {stats.latest_entry?.mark_no || "-"}
-          </h2>
-
-          <p
-            style={{
-              margin: 0,
-              color: T.textSecondary,
-            }}
-          >
-            {stats.latest_entry?.inspection_date || "-"}
-          </p>
-
-        </div>
-
-      </div>
-            {/* Dashboard Footer Metrics */}
-
-            <div
-        style={{
-          display: "grid",
-          gridTemplateColumns:
-            "repeat(auto-fit,minmax(220px,1fr))",
-          gap: 14,
-          marginTop: "2rem",
-        }}
-      >
-
-        <div
-          style={{
-            background: T.surface,
-            border: `1px solid ${T.border}`,
-            borderRadius: 14,
-            padding: "1.2rem",
-          }}
-        >
-
-          <p
-            style={{
-              margin: 0,
-              fontSize: 11,
-              color: T.textMuted,
-              textTransform: "uppercase",
-              letterSpacing: ".8px",
-            }}
-          >
-            Total Contractors
-          </p>
-
-          <h1
-            style={{
-              margin: "8px 0 0",
-              color: T.blue,
-              fontFamily:
-                "'Space Grotesk',sans-serif",
-            }}
-          >
-            {contractorData.length}
-          </h1>
-
-        </div>
-
-        <div
-          style={{
-            background: T.surface,
-            border: `1px solid ${T.border}`,
-            borderRadius: 14,
-            padding: "1.2rem",
-          }}
-        >
-
-          <p
-            style={{
-              margin: 0,
-              fontSize: 11,
-              color: T.textMuted,
-              textTransform: "uppercase",
-              letterSpacing: ".8px",
-            }}
-          >
-            Total Plants
-          </p>
-
-          <h1
-            style={{
-              margin: "8px 0 0",
-              color: T.green,
-              fontFamily:
-                "'Space Grotesk',sans-serif",
-            }}
-          >
-            {plantData.length}
-          </h1>
-
-        </div>
-
-        <div
-          style={{
-            background: T.surface,
-            border: `1px solid ${T.border}`,
-            borderRadius: 14,
-            padding: "1.2rem",
-          }}
-        >
-
-          <p
-            style={{
-              margin: 0,
-              fontSize: 11,
-              color: T.textMuted,
-              textTransform: "uppercase",
-              letterSpacing: ".8px",
-            }}
-          >
-            Total Defect Codes
-          </p>
-
-          <h1
-            style={{
-              margin: "8px 0 0",
-              color: T.red,
-              fontFamily:
-                "'Space Grotesk',sans-serif",
-            }}
-          >
-            {defectData.length}
-          </h1>
-
-        </div>
-
-        <div
-          style={{
-            background: T.surface,
-            border: `1px solid ${T.border}`,
-            borderRadius: 14,
-            padding: "1.2rem",
-          }}
-        >
-
-          <p
-            style={{
-              margin: 0,
-              fontSize: 11,
-              color: T.textMuted,
-              textTransform: "uppercase",
-              letterSpacing: ".8px",
-            }}
-          >
-            Database Entries
-          </p>
-
-          <h1
-            style={{
-              margin: "8px 0 0",
-              color: T.amber,
-              fontFamily:
-                "'Space Grotesk',sans-serif",
-            }}
-          >
-            {stats.total_reworks}
-          </h1>
-
-        </div>
-
-      </div>
-           {/* Quick Insights */}
-
-           <div
-        style={{
-          marginTop: "2rem",
-        }}
-      >
-
-        <h3
-          style={{
-            color: T.textPrimary,
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: ".8px",
+            textTransform: "uppercase",
+            color: T.textMuted,
             marginBottom: "1rem",
-            fontFamily:
-              "'Space Grotesk',sans-serif",
+            margin: "0 0 1rem",
           }}
         >
-          Quick Insights
-        </h3>
+          Distribution Analysis
+        </p>
 
         <div
           style={{
             display: "grid",
-            gridTemplateColumns:
-              "repeat(auto-fit,minmax(280px,1fr))",
-            gap: 16,
+            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+            gap: "1rem",
           }}
         >
+          <PieAnalytics
+            title="Plant Distribution"
+            data={plantData}
+          />
 
-          <div
-            style={{
-              background: T.surface,
-              border: `1px solid ${T.border}`,
-              borderRadius: 14,
-              padding: "1.3rem",
-            }}
-          >
+          <PieAnalytics
+            title="Contractor Distribution"
+            data={contractorData}
+          />
 
-            <h4
-              style={{
-                marginTop: 0,
-                color: T.blue,
-              }}
-            >
-              Highest Contractor
-            </h4>
-
-            <p
-              style={{
-                color: T.textSecondary,
-                lineHeight: 1.7,
-                marginBottom: 0,
-              }}
-            >
-              <strong>
-                {stats.top_contractor?.name || "-"}
-              </strong>
-              {" "}
-              has recorded
-              {" "}
-              <strong>
-                {stats.top_contractor?.count || 0}
-              </strong>
-              {" "}
-              rework cases and currently
-              contributes the highest share
-              of defects.
-            </p>
-
-          </div>
-
-          <div
-            style={{
-              background: T.surface,
-              border: `1px solid ${T.border}`,
-              borderRadius: 14,
-              padding: "1.3rem",
-            }}
-          >
-
-            <h4
-              style={{
-                marginTop: 0,
-                color: T.green,
-              }}
-            >
-              Highest Plant
-            </h4>
-
-            <p
-              style={{
-                color: T.textSecondary,
-                lineHeight: 1.7,
-                marginBottom: 0,
-              }}
-            >
-              <strong>
-                {stats.top_plant?.name || "-"}
-              </strong>
-              {" "}
-              currently contains the
-              maximum number of recorded
-              inspections and rework
-              entries.
-            </p>
-
-          </div>
-
-          <div
-            style={{
-              background: T.surface,
-              border: `1px solid ${T.border}`,
-              borderRadius: 14,
-              padding: "1.3rem",
-            }}
-          >
-
-            <h4
-              style={{
-                marginTop: 0,
-                color: T.red,
-              }}
-            >
-              Most Common Defect
-            </h4>
-
-            <p
-              style={{
-                color: T.textSecondary,
-                lineHeight: 1.7,
-                marginBottom: 0,
-              }}
-            >
-              <strong>
-                {stats.most_common_defect?.code || "-"}
-              </strong>
-              {" "}
-              is the most frequently
-              occurring defect code in
-              the current inspection
-              database.
-            </p>
-
-          </div>
-
+          <PieAnalytics
+            title="Defect Code Distribution"
+            data={defectData}
+          />
         </div>
-
       </div>
-            {/* Footer */}
 
-            <div
+      {/* SECTION 4: Top Rankings */}
+      <div
         style={{
-          marginTop: "2.5rem",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+          gap: "1rem",
+          marginBottom: "2rem",
+        }}
+      >
+        <RankedListCard
+          title="Top 5 Contractors by Rework Count"
+          data={contractorData}
+          color={T.blue}
+          maxItems={5}
+        />
+
+        <RankedListCard
+          title="Top Plants by Inspection Count"
+          data={plantData}
+          color={T.green}
+          maxItems={5}
+        />
+      </div>
+
+      {/* SECTION 5: Executive Insights */}
+      <div style={{ marginBottom: "2rem" }}>
+        <p
+          style={{
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: ".8px",
+            textTransform: "uppercase",
+            color: T.textMuted,
+            marginBottom: "1rem",
+            margin: "0 0 1rem",
+          }}
+        >
+          Executive Insights
+        </p>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+            gap: "1rem",
+          }}
+        >
+          <InsightCard
+            title="Highest Rework Contractor"
+            content={`${stats.top_contractor?.name || "N/A"} accounts for ${stats.top_contractor?.count || 0} rework cases. Focus on process improvement and welder training for this contractor.`}
+            iconColor={T.blue}
+            icon="📈"
+          />
+
+          <InsightCard
+            title="Highest Rework Plant"
+            content={`${stats.top_plant?.name || "N/A"} has the highest number of recorded inspections with ${stats.top_plant?.count || 0} rework entries. Review equipment and process parameters.`}
+            iconColor={T.green}
+            icon="🏭"
+          />
+
+          <InsightCard
+            title="Most Common Defect"
+            content={`Defect code ${stats.most_common_defect?.code || "N/A"} is the most frequently occurring issue. Implement targeted corrective actions and quality training.`}
+            iconColor={T.red}
+            icon="⚠️"
+          />
+
+          <InsightCard
+            title="Overall Quality Status"
+            content={`Current quality score is ${qualityScore}% with ${getQualityStatus(qualityScore)} performance. ${qualityScore >= 85 ? "Maintain current quality standards." : qualityScore >= 70 ? "Continue monitoring and take preventive measures." : "Urgent action required to improve quality metrics."}`}
+            iconColor={getQualityColor(qualityScore)}
+            icon={
+              qualityScore >= 85
+                ? "✅"
+                : qualityScore >= 70
+                ? "⏳"
+                : "🔴"
+            }
+          />
+        </div>
+      </div>
+
+      {/* FOOTER */}
+      <div
+        style={{
+          marginTop: "2rem",
           paddingTop: "1.5rem",
           borderTop: `1px solid ${T.border}`,
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
           flexWrap: "wrap",
-          gap: 10,
+          gap: "1rem",
         }}
       >
-
         <div>
-
           <h3
             style={{
               margin: 0,
               color: T.textPrimary,
-              fontFamily:
-                "'Space Grotesk',sans-serif",
+              fontFamily: "'Space Grotesk',sans-serif",
+              fontSize: 14,
+              fontWeight: 700,
             }}
           >
             ReworkIQ v2.0
@@ -1345,15 +946,14 @@ export default function Dashboard() {
 
           <p
             style={{
-              marginTop: 5,
+              marginTop: "0.5rem",
               color: T.textMuted,
-              fontSize: 13,
+              fontSize: 12,
+              margin: "0.5rem 0 0",
             }}
           >
-            Live Rework Monitoring • Contractor Analytics •
-            Plant Analytics • Defect Code Analytics
+            Executive Analytics • Contractor Monitoring • Plant Analysis
           </p>
-
         </div>
 
         <div
@@ -1361,33 +961,27 @@ export default function Dashboard() {
             textAlign: "right",
           }}
         >
-
           <div
             style={{
               color: T.green,
-              fontWeight: 600,
-              fontSize: 13,
+              fontWeight: 700,
+              fontSize: 12,
             }}
           >
-            System Status : Online
+            ● System Status: Online
           </div>
 
           <div
             style={{
               color: T.textMuted,
               fontSize: 12,
-              marginTop: 5,
+              marginTop: "0.5rem",
             }}
           >
-            Total Records : {stats.total_reworks}
+            Total Records: {stats.total_reworks}
           </div>
-
         </div>
-
       </div>
-
     </div>
-
   );
-
-} 
+}

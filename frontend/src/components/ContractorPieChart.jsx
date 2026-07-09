@@ -24,7 +24,9 @@ import {
     textPrimary: "#F1F5F9",
   };
   
-  export default function PlantDefectPieChart({ defects }){
+  export default function ContractorPieChart({
+    defects,
+  }) {
   
     const data = Object.entries(defects).map(
       ([name, value]) => ({

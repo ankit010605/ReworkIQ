@@ -17,6 +17,7 @@ def create_app():
     # Import models so Flask-Migrate detects them
     from app.models import ReworkEntry
     from app.routes import rework_bp
+    from app.routes.report import report_bp
 
     @app.route("/api/health")
     def health():
@@ -25,4 +26,5 @@ def create_app():
             "message": "ReworkIQ Backend Running"
         }
     app.register_blueprint(rework_bp)
+    app.register_blueprint(report_bp)
     return app
