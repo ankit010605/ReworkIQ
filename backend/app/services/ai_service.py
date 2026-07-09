@@ -10,7 +10,7 @@ API_KEY = os.getenv("OPENROUTER_API_KEY")
 print("API KEY FOUND:", API_KEY is not None)
 print(API_KEY[:15] if API_KEY else "No Key")
 
-MODEL =  "meta-llama/llama-3.3-8b-instruct:free"
+MODEL = "openrouter/free"
 
 
 def generate_ai_report(stats):
