@@ -5,9 +5,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-API_KEY = os.getenv("OPENROUTER_API_KEY")
 
-MODEL =  "openrouter/free"
+API_KEY = os.getenv("OPENROUTER_API_KEY")
+print("API KEY FOUND:", API_KEY is not None)
+print(API_KEY[:15] if API_KEY else "No Key")
+
+MODEL =  "deepseek/deepseek-chat-v3-0324:free"
 
 
 def generate_ai_report(stats):
