@@ -294,11 +294,12 @@ def monthly_chart(monthly_counts):
     values = list(monthly_counts.values())
 
     plt.figure(figsize=(6, 2.2))
-    plt.plot(months, values, linewidth=2.5, marker="o",
+    x = list(range(len(months)))
+    plt.plot(x, values, linewidth=2.5, marker="o",
              color=CHART_PALETTE[0], markerfacecolor=CHART_PALETTE[1])
-    plt.fill_between(range(len(months)), values, alpha=0.08, color=CHART_PALETTE[0])
+    plt.fill_between(x, values, alpha=0.08, color=CHART_PALETTE[0])
     plt.title("Monthly Rework Trend", fontsize=11, color="#1F2937", weight="bold")
-    plt.xticks(rotation=30, fontsize=8)
+    plt.xticks(x,months,rotation=30, fontsize=8)
     plt.yticks(fontsize=8)
     plt.grid(axis="y", linestyle="--", alpha=0.3)
     ax = plt.gca()
@@ -312,10 +313,11 @@ def monthly_chart(monthly_counts):
 
     plt.savefig(path, dpi=100)
 
-    plt.clf()
-    plt.close('all')
-    gc.collect()
+    # plt.clf()
+    plt.close()
+    # gc.collect()
 
+    
     import os
 
     print("Saved chart to:", path)
@@ -365,7 +367,9 @@ def contractor_chart(contractor_counts):
     plt.clf()
     plt.close('all')
     gc.collect()
+    
 
+    
     return path
 
 
@@ -537,6 +541,7 @@ def create_report(stats):
     #         contractor_image = contractor_chart(stats["contractor_counts"])
     #         story.append(Paragraph("Contractor Distribution", SUBHEAD))
     #         story.append(Image(contractor_image, width=3.2 * inch, height=3.2 * inch))
+    
 
     if stats.get("monthly_counts"):
 
@@ -550,7 +555,7 @@ def create_report(stats):
 
         print("STEP 3: Adding image to story...")
 
-        story.append(Image(monthly_image, width=6.7 * inch, height=2.7 * inch))
+        story.append(Image(monthly_image, width=6.7*inch, height=2.7*inch))
 
         print("STEP 4: Image added successfully.")
 
@@ -605,23 +610,23 @@ def create_report(stats):
     # BUILD
     ####################################################
 
-    import traceback
-    try:
-        print("STEP 5: Starting doc.build()")
+   import traceback
+   try:
+       print("STEP 5: Starting doc.build()")
 
-        doc.build(
-            story,
-            onFirstPage=_draw_header_footer,
-            onLaterPages=_draw_header_footer,
-        )
+       doc.build(
+           story,
+           onFirstPage=_draw_header_footer,
+           onLaterPages=_draw_header_footer,
+    )
 
-        print("STEP 6: doc.build() completed")
+       print("STEP 6: doc.build() completed")
 
-    except Exception:
+   except Exception:
         print("========== PDF BUILD ERROR ==========")
         traceback.print_exc()
         print("=====================================")
         raise
 
-    buffer.seek(0)
-    return buffer
+   buffer.seek(0)
+   return buffer
