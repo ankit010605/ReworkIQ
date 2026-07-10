@@ -495,7 +495,7 @@ def create_report(stats):
     # PAGE 3 — VISUAL ANALYTICS
     ####################################################
 
-    # story.extend(section_heading("Visual Analytics"))
+    story.extend(section_heading("Visual Analytics"))
 
     # if stats.get("monthly_counts"):
     #     monthly_image = monthly_chart(stats["monthly_counts"])
@@ -518,9 +518,9 @@ def create_report(stats):
     #         story.append(Paragraph("Contractor Distribution", SUBHEAD))
     #         story.append(Image(contractor_image, width=3.2 * inch, height=3.2 * inch))
     if stats.get("monthly_counts"):
-    monthly_image = monthly_chart(stats["monthly_counts"])
-    story.append(Paragraph("Monthly Rework Trend", SUBHEAD))
-    story.append(Image(monthly_image, width=6.7*inch, height=2.7*inch))
+             monthly_image = monthly_chart(stats["monthly_counts"])
+             story.append(Paragraph("Monthly Rework Trend", SUBHEAD))
+             story.append(Image(monthly_image, width=6.7*inch, height=2.7*inch)) 
     story.append(PageBreak())
 
     ####################################################
