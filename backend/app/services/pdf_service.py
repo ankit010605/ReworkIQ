@@ -543,19 +543,20 @@ def create_report(stats):
     
 
     if stats.get("monthly_counts"):
-      monthly_image = monthly_chart(stats["monthly_counts"])
 
-      print("Chart Path:", monthly_image)
-      print("Exists:", os.path.exists(monthly_image))
+       print("STEP 1: Creating monthly chart...")
+
+       monthly_image = monthly_chart(stats["monthly_counts"])
+
+       print("STEP 2: Monthly chart created.")
 
       story.append(Paragraph("Monthly Rework Trend", SUBHEAD))
-      story.append(
-        Image(
-            monthly_image,
-            width=6.7*inch,
-            height=2.7*inch
-        )
-    )
+
+      print("STEP 3: Adding image to story...")
+
+      story.append(Image(monthly_image, width=6.7*inch, height=2.7*inch))
+
+      print("STEP 4: Image added successfully.")
 
     ####################################################
     # PAGE 4 — AI EXECUTIVE ANALYSIS
@@ -608,19 +609,24 @@ def create_report(stats):
     # BUILD
     ####################################################
 
-    import traceback
+   import traceback
 
-    try:
-      doc.build(
+   try:
+     print("STEP 5: Starting doc.build()")
+
+     doc.build(
         story,
         onFirstPage=_draw_header_footer,
         onLaterPages=_draw_header_footer,
     )
-    except Exception:
-       print("========== PDF BUILD ERROR ==========")
-       traceback.print_exc()
-       print("=====================================")
-       raise
 
-    buffer.seek(0)
-    return buffer
+     print("STEP 6: doc.build() completed")
+
+   except Exception:
+     print("========== PDF BUILD ERROR ==========")
+     traceback.print_exc()
+     print("=====================================")
+     raise
+
+   buffer.seek(0)
+   return buffer
