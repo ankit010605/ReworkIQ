@@ -132,7 +132,15 @@ def generate_report():
 
     }
 
-    pdf = create_report(stats)
+    try:
+        pdf = create_report(stats)
+    except Exception as e:
+        import traceback
+
+        print("\n========== PDF ERROR ==========")
+        traceback.print_exc()
+        print("================================\n")
+        raise
 
     return send_file(
         pdf,
