@@ -308,6 +308,12 @@ def monthly_chart(monthly_counts):
     path = _new_tempfile()
     plt.savefig(path, dpi=200)
     plt.close()
+
+    import os
+
+    print("Saved chart to:", path)
+    print("File exists:", os.path.exists(path))
+
     return path
 
 
@@ -517,11 +523,22 @@ def create_report(stats):
     #         contractor_image = contractor_chart(stats["contractor_counts"])
     #         story.append(Paragraph("Contractor Distribution", SUBHEAD))
     #         story.append(Image(contractor_image, width=3.2 * inch, height=3.2 * inch))
+    
+
     if stats.get("monthly_counts"):
-             monthly_image = monthly_chart(stats["monthly_counts"])
-             story.append(Paragraph("Monthly Rework Trend", SUBHEAD))
-             story.append(Image(monthly_image, width=6.7*inch, height=2.7*inch)) 
-    story.append(PageBreak())
+      monthly_image = monthly_chart(stats["monthly_counts"])
+
+      print("Chart Path:", monthly_image)
+      print("Exists:", os.path.exists(monthly_image))
+
+      story.append(Paragraph("Monthly Rework Trend", SUBHEAD))
+      story.append(
+        Image(
+            monthly_image,
+            width=6.7*inch,
+            height=2.7*inch
+        )
+    )
 
     ####################################################
     # PAGE 4 — AI EXECUTIVE ANALYSIS
@@ -574,6 +591,19 @@ def create_report(stats):
     # BUILD
     ####################################################
 
-    doc.build(story)
+    import traceback
+
+    try:
+      doc.build(
+        story,
+        onFirstPage=_draw_header_footer,
+        onLaterPages=_draw_header_footer,
+    )
+    except Exception:
+       print("========== PDF BUILD ERROR ==========")
+       traceback.print_exc()
+       print("=====================================")
+       raise
+
     buffer.seek(0)
     return buffer
