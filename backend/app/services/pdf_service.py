@@ -316,7 +316,6 @@ def monthly_chart(monthly_counts):
     plt.close('all')
     gc.collect()
 
-    
     import os
 
     print("Saved chart to:", path)
@@ -366,9 +365,7 @@ def contractor_chart(contractor_counts):
     plt.clf()
     plt.close('all')
     gc.collect()
-    
 
-    
     return path
 
 
@@ -540,7 +537,6 @@ def create_report(stats):
     #         contractor_image = contractor_chart(stats["contractor_counts"])
     #         story.append(Paragraph("Contractor Distribution", SUBHEAD))
     #         story.append(Image(contractor_image, width=3.2 * inch, height=3.2 * inch))
-    
 
     if stats.get("monthly_counts"):
 
@@ -554,7 +550,7 @@ def create_report(stats):
 
         print("STEP 3: Adding image to story...")
 
-        story.append(Image(monthly_image, width=6.7*inch, height=2.7*inch))
+        story.append(Image(monthly_image, width=6.7 * inch, height=2.7 * inch))
 
         print("STEP 4: Image added successfully.")
 
@@ -609,23 +605,23 @@ def create_report(stats):
     # BUILD
     ####################################################
 
-   import traceback
-   try:
-       print("STEP 5: Starting doc.build()")
+    import traceback
+    try:
+        print("STEP 5: Starting doc.build()")
 
-       doc.build(
-           story,
-           onFirstPage=_draw_header_footer,
-           onLaterPages=_draw_header_footer,
-    )
+        doc.build(
+            story,
+            onFirstPage=_draw_header_footer,
+            onLaterPages=_draw_header_footer,
+        )
 
-       print("STEP 6: doc.build() completed")
+        print("STEP 6: doc.build() completed")
 
-   except Exception:
+    except Exception:
         print("========== PDF BUILD ERROR ==========")
         traceback.print_exc()
         print("=====================================")
         raise
 
-   buffer.seek(0)
-   return buffer
+    buffer.seek(0)
+    return buffer
