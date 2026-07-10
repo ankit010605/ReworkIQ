@@ -293,7 +293,7 @@ def monthly_chart(monthly_counts):
     months = list(monthly_counts.keys())
     values = list(monthly_counts.values())
 
-    plt.figure(figsize=(7, 2.8))
+    plt.figure(figsize=(6, 2.2))
     plt.plot(months, values, linewidth=2.5, marker="o",
              color=CHART_PALETTE[0], markerfacecolor=CHART_PALETTE[1])
     plt.fill_between(range(len(months)), values, alpha=0.08, color=CHART_PALETTE[0])
@@ -306,10 +306,17 @@ def monthly_chart(monthly_counts):
         ax.spines[spine].set_visible(False)
     plt.tight_layout()
 
-    path = _new_tempfile()
-    plt.savefig(path, dpi=200)
-    plt.close()
+    import gc
 
+    path = _new_tempfile()
+
+    plt.savefig(path, dpi=100)
+
+    plt.clf()
+    plt.close('all')
+    gc.collect()
+
+    return path
     import os
 
     print("Saved chart to:", path)
@@ -322,7 +329,7 @@ def plant_chart(plant_counts):
     labels = list(plant_counts.keys())
     values = list(plant_counts.values())
 
-    plt.figure(figsize=(4.2, 4.2))
+    plt.figure(figsize=(3, 3))
     plt.pie(
         values, labels=labels, autopct="%1.1f%%",
         colors=CHART_PALETTE, textprops={"fontsize": 8},
@@ -332,7 +339,7 @@ def plant_chart(plant_counts):
     plt.tight_layout()
 
     path = _new_tempfile()
-    plt.savefig(path, dpi=200)
+    plt.savefig(path, dpi=80)
     plt.close()
     return path
 
@@ -341,7 +348,7 @@ def contractor_chart(contractor_counts):
     labels = list(contractor_counts.keys())
     values = list(contractor_counts.values())
 
-    plt.figure(figsize=(4.2, 4.2))
+    plt.figure(figsize=(3, 3))
     plt.pie(
         values, labels=labels, autopct="%1.1f%%",
         colors=CHART_PALETTE, textprops={"fontsize": 8},
@@ -350,9 +357,18 @@ def contractor_chart(contractor_counts):
     plt.title("Contractor Distribution", fontsize=11, color="#1F2937", weight="bold")
     plt.tight_layout()
 
+    import gc
+
     path = _new_tempfile()
-    plt.savefig(path, dpi=200)
-    plt.close()
+
+    plt.savefig(path, dpi=100)
+
+    plt.clf()
+    plt.close('all')
+    gc.collect()
+    
+
+    
     return path
 
 
