@@ -543,21 +543,21 @@ def create_report(stats):
     #         story.append(Image(contractor_image, width=3.2 * inch, height=3.2 * inch))
     
 
-    if stats.get("monthly_counts"):
+    # if stats.get("monthly_counts"):
 
-        print("STEP 1: Creating monthly chart...")
+    #     print("STEP 1: Creating monthly chart...")
 
-        monthly_image = monthly_chart(stats["monthly_counts"])
+    #     monthly_image = monthly_chart(stats["monthly_counts"])
 
-        print("STEP 2: Monthly chart created.")
+    #     print("STEP 2: Monthly chart created.")
 
-        story.append(Paragraph("Monthly Rework Trend", SUBHEAD))
+    #     story.append(Paragraph("Monthly Rework Trend", SUBHEAD))
 
-        print("STEP 3: Adding image to story...")
+    #     print("STEP 3: Adding image to story...")
 
-        story.append(Image(monthly_image, width=6.7*inch, height=2.7*inch))
+    #     story.append(Image(monthly_image, width=6.7*inch, height=2.7*inch))
 
-        print("STEP 4: Image added successfully.")
+    #     print("STEP 4: Image added successfully.")
 
     ####################################################
     # PAGE 4 — AI EXECUTIVE ANALYSIS
