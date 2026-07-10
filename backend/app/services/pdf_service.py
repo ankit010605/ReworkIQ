@@ -610,23 +610,23 @@ def create_report(stats):
     # BUILD
     ####################################################
 
-   import traceback
-   try:
-       print("STEP 5: Starting doc.build()")
+    import traceback
+    try:
+        print("STEP 5: Starting doc.build()")
 
-       doc.build(
-           story,
-           onFirstPage=_draw_header_footer,
-           onLaterPages=_draw_header_footer,
-    )
+        doc.build(
+            story,
+            onFirstPage=_draw_header_footer,
+            onLaterPages=_draw_header_footer,
+        )
 
-       print("STEP 6: doc.build() completed")
+        print("STEP 6: doc.build() completed")
 
-   except Exception:
+    except Exception:
         print("========== PDF BUILD ERROR ==========")
         traceback.print_exc()
         print("=====================================")
         raise
 
-   buffer.seek(0)
-   return buffer
+    buffer.seek(0)
+    return buffer
