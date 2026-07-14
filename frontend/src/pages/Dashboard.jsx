@@ -768,7 +768,7 @@ export default function Dashboard() {
           subtitle={`${stats.top_plant?.count || 0} cases`}
         />
 
-        <StatCard
+        {/* <StatCard
           title="Quality Performance"
           value={`${qualityScore}%`}
           accent={getQualityColor(qualityScore)}
@@ -787,7 +787,7 @@ export default function Dashboard() {
               : "⚠"
           }
           subtitle={getQualityStatus(qualityScore)}
-        />
+        /> */}
       </div>
 
       {/* SECTION 2: Monthly Trend */}
@@ -828,10 +828,10 @@ export default function Dashboard() {
             data={contractorData}
           />
 
-          <PieAnalytics
-            title="Defect Code Distribution"
+          {/* <PieAnalytics
+            title="DefectCodeList"
             data={defectData}
-          />
+          /> */}
         </div>
       </div>
 
@@ -896,14 +896,14 @@ export default function Dashboard() {
             icon="🏭"
           />
 
-          <InsightCard
+          {/* <InsightCard
             title="Most Common Defect"
-            content={`Defect code ${stats.most_common_defect?.code || "N/A"} is the most frequently occurring issue. Implement targeted corrective actions and quality training.`}
+            content={`Defect code ${stats.most_common_defect?.code } is the most frequently occurring issue. Implement targeted corrective actions and quality training.`}
             iconColor={T.red}
             icon="⚠️"
-          />
+          /> */}
 
-          <InsightCard
+          {/* <InsightCard
             title="Overall Quality Status"
             content={`Current quality score is ${qualityScore}% with ${getQualityStatus(qualityScore)} performance. ${qualityScore >= 85 ? "Maintain current quality standards." : qualityScore >= 70 ? "Continue monitoring and take preventive measures." : "Urgent action required to improve quality metrics."}`}
             iconColor={getQualityColor(qualityScore)}
@@ -912,9 +912,9 @@ export default function Dashboard() {
                 ? "✅"
                 : qualityScore >= 70
                 ? "⏳"
-                : "🔴"
-            }
-          />
+                : "🔴" */}
+            {/* } */}
+          {/* /> */}
         </div>
       </div>
 

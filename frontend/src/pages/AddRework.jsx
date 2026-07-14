@@ -21,6 +21,7 @@ const T = {
 const PLANTS = [
   "Plant 1",
   "Plant 2",
+  "plant 2A",
   "Plant 3",
   "Plant 4",
 ];
