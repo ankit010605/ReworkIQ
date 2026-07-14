@@ -6,7 +6,7 @@ import {
   FaPlusCircle,
   FaUserTie,
 } from "react-icons/fa";
-import { FaFileExcel } from "react-icons/fa";
+import { FaFileExcel, FaUserPlus } from "react-icons/fa";
 
 const T = {
   textPrimary:   "#F1F5F9",
@@ -52,6 +52,11 @@ const NAV_ITEMS = [
     icon: <FaFileExcel size={15} />,
     label: "Import Excel",
 },
+// {
+//   to: "/contractors",
+//   icon: <FaUserPlus size={15} />,
+//   label: "Add Contractor",
+// },
 ];
 function Sidebar() {
   return (
@@ -166,5 +171,6 @@ function Sidebar() {
     </div>
   );
 }
+
 
 export default Sidebar;

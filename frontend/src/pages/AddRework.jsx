@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import api from "../api/api";
 import { DEFECT_CODES } from "../constants/defectCodes";
 
@@ -25,23 +25,12 @@ const PLANTS = [
   "Plant 4",
 ];
 
-const CONTRACTORS = [
-  "Aanjana",
-  "Dhan Laxmi",
-  "GS ENGG",
-  "High Crystal",
-  "KHE",
-  "Mohanty",
-  "PVE",
-  "Sabari",
-  "Sanjay",
-  "Shivgauri",
-];
+
 
 
 const EMPTY = {
   plant: "Plant 1",
-  contractor: "Aanjana",
+  contractor: "",
   mark_no: "",
   defect_code: "HOP",
   remarks: "",
@@ -109,6 +98,7 @@ function Field({ label, hint, children }) {
 
 export default function AddRework() {
   const [formData, setFormData] = useState(EMPTY);
+  const [contractors, setContractors] = useState([]);
   const [focused, setFocused] = useState("");
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(null);
@@ -124,6 +114,32 @@ export default function AddRework() {
     onFocus: () => setFocused(name),
     onBlur: () => setFocused(""),
   });
+  useEffect(() => {
+
+  loadContractors();
+
+}, []);
+
+const loadContractors = async () => {
+  try {
+    const res = await api.get("/contractors");
+
+    console.log(res.data);      // ADD THIS
+
+    setContractors(res.data);
+
+    if (res.data.length > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        contractor: res.data[0].contractor_name,
+      }));
+    }
+
+  } catch (err) {
+    console.log(err);
+  }
+
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -279,11 +295,14 @@ export default function AddRework() {
                 }}
                 {...focusProps("contractor")}
               >
-                {CONTRACTORS.map((contractor) => (
-                  <option key={contractor} value={contractor}>
-                    {contractor}
-                  </option>
-                ))}
+               {contractors.map((contractor) => (
+  <option
+    key={contractor.id}
+    value={contractor.contractor_name}
+  >
+    {contractor.contractor_name}
+  </option>
+))}
               </select>
             </Field>
           </div>
