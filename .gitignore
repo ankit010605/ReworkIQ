@@ -1,21 +1,55 @@
+# ==========================
 # Python
+# ==========================
+
 backend/venv/
 backend/__pycache__/
+**/__pycache__/
 *.pyc
 
+# ==========================
 # Environment Variables
+# ==========================
+
 backend/.env
 
+# ==========================
+# Generated Reports
+# ==========================
+
+backend/reports/
+reports/
+
+# ==========================
+# Database
+# ==========================
+
+*.db
+*.sqlite3
+
+# ==========================
 # Node
+# ==========================
+
 frontend/node_modules/
 
-# Build folders
-frontend/dist/
+# ==========================
+# React Build
+# ==========================
 
+frontend/dist/
+frontend/build/
+
+# ==========================
 # IDE
+# ==========================
+
 .vscode/
 .idea/
 
-# OS
+# ==========================
+# Operating System
+# ==========================
+
 .DS_Store
 Thumbs.db
