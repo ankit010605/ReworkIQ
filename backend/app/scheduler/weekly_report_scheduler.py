@@ -119,20 +119,20 @@ def start_scheduler(app):
 
     # Development Schedule
 
+    # scheduler.add_job(
+    #     test_job,
+    #     trigger="interval",
+    #     minutes=1,
+    #     args=[app]
+    # )
     scheduler.add_job(
-        test_job,
-        trigger="interval",
-        minutes=1,
-        args=[app]
-    )
-#     scheduler.add_job(
-#       test_job,
-#       trigger="cron",
-#       day_of_week="mon",
-#       hour=8,
-#       minute=0,
-#       args=[app]
-# )
+      test_job,
+      trigger="cron",
+      day_of_week="mon",
+      hour=8,
+      minute=0,
+      args=[app]
+)
 
     scheduler.start()
 
