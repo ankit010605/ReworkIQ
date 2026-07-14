@@ -1,4 +1,5 @@
 from flask import Flask
+import os
 
 from app.config import Config
 from app.extensions import db, migrate, cors
@@ -9,22 +10,42 @@ def create_app():
 
     app.config.from_object(Config)
 
+    # =====================================================
+    # Initialize Extensions
+    # =====================================================
+
     db.init_app(app)
     migrate.init_app(app, db)
     cors.init_app(app)
 
-    # Import models so Flask-Migrate detects them
+    # =====================================================
+    # Import Models
+    # =====================================================
+
     from app.models import (
         ReworkEntry,
         Contractor,
-        Employee
+        Employee,
     )
+
+    # =====================================================
+    # Register Blueprints
+    # =====================================================
 
     from app.routes import rework_bp
     from app.routes.report import report_bp
-    # from app.routes.email_routes import email_bp
     from app.routes.contractor import contractor_bp
-    from app.scheduler.weekly_report_scheduler import start_scheduler
+
+    app.register_blueprint(rework_bp)
+    app.register_blueprint(report_bp)
+    app.register_blueprint(
+        contractor_bp,
+        url_prefix="/api/contractors"
+    )
+
+    # =====================================================
+    # Health Check
+    # =====================================================
 
     @app.route("/api/health")
     def health():
@@ -33,18 +54,20 @@ def create_app():
             "message": "ReworkIQ Backend Running"
         }
 
-    app.register_blueprint(rework_bp)
-    app.register_blueprint(report_bp)
-    # app.register_blueprint(email_bp)
+    # =====================================================
+    # Start Scheduler
+    # =====================================================
 
-    app.register_blueprint(
-        contractor_bp,
-        url_prefix="/api/contractors"
-    )
+    from app.scheduler.weekly_report_scheduler import start_scheduler
 
-    import os
-
+    # Local Development (avoid duplicate scheduler)
     if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-       start_scheduler(app)
+        print("Starting scheduler (Local)...")
+        start_scheduler(app)
+
+    # Render / Gunicorn Production
+    elif os.environ.get("RENDER"):
+        print("Starting scheduler (Render)...")
+        start_scheduler(app)
 
     return app
