@@ -13,7 +13,7 @@ def _leader_name(entry):
 def build_weekly_email(statistics):
 
     subject = (
-        f"ReworkIQ | Weekly Rework Report | "
+        f"### REWORKIQ TEST BUILD ### | "
         f"{datetime.now().strftime('%d %b %Y')}"
     )
 
