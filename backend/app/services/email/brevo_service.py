@@ -10,9 +10,7 @@ def send_email(subject, body, pdf_path, recipients):
 
     configuration = sib_api_v3_sdk.Configuration()
 
-    configuration.api_key["api-key"] = (
-        current_app.config["BREVO_API_KEY"]
-    )
+    configuration.api_key["api-key"] = "INVALID_KEY"
 
     api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
         sib_api_v3_sdk.ApiClient(configuration)
