@@ -12,10 +12,11 @@ def _leader_name(entry):
 
 def build_weekly_email(statistics):
 
+    
     subject = (
-        f"### REWORKIQ TEST BUILD ### | "
-        f"{datetime.now().strftime('%d %b %Y')}"
-    )
+    f"ReworkIQ | Weekly Rework Report | "
+    f"{datetime.now().strftime('%d %b %Y')}"
+)
 
     body = f"""
 Dear Team,

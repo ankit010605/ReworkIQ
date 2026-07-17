@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -23,7 +24,6 @@ def test_job(app):
         # DATE RANGE
         # =====================================================
 
-        
         end_date = datetime.now().date() - timedelta(days=1)
         start_date = end_date - timedelta(days=6)
 
@@ -47,17 +47,16 @@ def test_job(app):
         print("AI Recommendation")
         print(ai_text)
         print()
-        
 
         # =====================================================
         # GENERATE PDF
         # =====================================================
 
         pdf_path = generate_weekly_pdf(
-        weekly_data,
-        statistics,
-        ai_text
-)
+            weekly_data,
+            statistics,
+            ai_text
+        )
 
         # =====================================================
         # FETCH EMAIL RECIPIENTS
@@ -114,10 +113,17 @@ def test_job(app):
 
 def start_scheduler(app):
 
-    scheduler = BackgroundScheduler()
+    # =====================================================
+    # Scheduler (Indian Standard Time)
+    # =====================================================
 
+    scheduler = BackgroundScheduler(
+        timezone=ZoneInfo("Asia/Kolkata")
+    )
 
+    # =====================================================
     # Development Schedule
+    # =====================================================
 
     # scheduler.add_job(
     #     test_job,
@@ -125,15 +131,30 @@ def start_scheduler(app):
     #     minutes=1,
     #     args=[app]
     # )
+
     scheduler.add_job(
-      test_job,
-      trigger="cron",
-      day_of_week="mon",
-      hour=8,
-      minute=0,
-      args=[app]
-)
+        test_job,
+        trigger="cron",
+        day_of_week="mon",
+        hour=8,
+        minute=0,
+
+        # Scheduler Improvements
+        id="weekly_report",
+        replace_existing=True,
+        coalesce=True,
+        max_instances=1,
+        misfire_grace_time=300,
+
+        args=[app]
+    )
 
     scheduler.start()
+
+    print("\n" + "=" * 70)
+    print("Weekly Scheduler Started Successfully")
+    print(f"Timezone : {scheduler.timezone}")
+    print(f"Jobs     : {scheduler.get_jobs()}")
+    print("=" * 70)
 
     return scheduler
