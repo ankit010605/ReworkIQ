@@ -8,6 +8,10 @@ from app.extensions import db, migrate, cors
 def create_app():
     app = Flask(__name__)
 
+    # =====================================================
+    # Load Configuration
+    # =====================================================
+
     app.config.from_object(Config)
 
     # =====================================================
@@ -55,19 +59,27 @@ def create_app():
         }
 
     # =====================================================
-    # Start Scheduler
+    # Scheduler
     # =====================================================
 
     from app.scheduler.weekly_report_scheduler import start_scheduler
 
-    # Local Development (avoid duplicate scheduler)
-    if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-        print("Starting scheduler (Local)...")
-        start_scheduler(app)
+    print("=" * 60)
+    print("APP DEBUG :", app.debug)
+    print("WERKZEUG_RUN_MAIN :", os.environ.get("WERKZEUG_RUN_MAIN"))
+    print("RENDER :", os.environ.get("RENDER"))
+    print("RENDER_SERVICE_NAME :", os.environ.get("RENDER_SERVICE_NAME"))
+    print("=" * 60)
 
-    # Render / Gunicorn Production
-    elif os.environ.get("RENDER"):
-        print("Starting scheduler (Render)...")
+    # Local Flask Development
+    if app.debug:
+        if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+            print("Starting Scheduler (Local)...")
+            start_scheduler(app)
+
+    # Production (Gunicorn / Render)
+    else:
+        print("Starting Scheduler (Production)...")
         start_scheduler(app)
 
     return app
