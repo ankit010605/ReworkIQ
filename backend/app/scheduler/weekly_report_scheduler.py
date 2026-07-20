@@ -17,7 +17,7 @@ def test_job(app):
     with app.app_context():
         print("\n" + "=" * 70)
         print("Starting Weekly Rework Report Job")
-        print(f"Time : {datetime.now()}")
+        print(f"Time : {datetime.now(ZoneInfo('Asia/Kolkata'))}")
         print("=" * 70)
 
         # =====================================================
@@ -132,29 +132,48 @@ def start_scheduler(app):
     #     args=[app]
     # )
 
+    # scheduler.add_job(
+    #     test_job,
+    #     trigger="cron",
+    #     day_of_week="mon",
+    #     hour=8,
+    #     minute=0,
+
+    #     # Scheduler Improvements
+    #     id="weekly_report",
+    #     replace_existing=True,
+    #     coalesce=True,
+    #     max_instances=1,
+    #     misfire_grace_time=300,
+
+    #     args=[app]
+    # )
     scheduler.add_job(
-        test_job,
-        trigger="cron",
-        day_of_week="mon",
-        hour=8,
-        minute=0,
-
-        # Scheduler Improvements
-        id="weekly_report",
-        replace_existing=True,
-        coalesce=True,
-        max_instances=1,
-        misfire_grace_time=300,
-
-        args=[app]
-    )
+       test_job,
+       trigger="cron",
+       day_of_week="mon",
+       hour=10,
+       minute=30,
+       id="weekly_report",
+       replace_existing=True,
+       coalesce=True,
+       max_instances=1,
+       misfire_grace_time=300,
+       args=[app]
+)
 
     scheduler.start()
 
     print("\n" + "=" * 70)
     print("Weekly Scheduler Started Successfully")
     print(f"Timezone : {scheduler.timezone}")
+
+    job = scheduler.get_job("weekly_report")
+    print(f"Next Run : {job.next_run_time}")
+
     print(f"Jobs     : {scheduler.get_jobs()}")
     print("=" * 70)
+
+    
 
     return scheduler
